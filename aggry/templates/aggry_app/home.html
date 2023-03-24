@@ -1,0 +1,358 @@
+{% extends "aggry_app/base.html" %}
+{% block content %}
+{% load static %}
+{% load humanize %}
+
+<h1 class="title">求人一覧</h1>
+<hr>
+
+<p class="subtitle">該当求人：{{ jobs|length }}件</p>
+
+
+
+<div class="columns">
+    <div class="column is-5">
+    {% comment %} 二次元リストからラベルごとの求人リストを取得 {% endcomment %}
+    {% for objs in page_obj %}
+
+
+        {% comment %} ラベルが-1（外れ値）だった場合はそのまま表示 {% endcomment %}
+        {% if objs.0.label1 == -1 %}
+            {% comment %} １求人ずつ表示 {% endcomment %}
+            {% for obj in objs %}
+              <div class="job_box" style = "max-width:600px; margin-bottom:150px; padding:30px; box-shadow: 15px 16px 47px -15px #464a7c; border-radius: 31px;">
+                <h2 class="subtitle">{{obj.title}}</h2>
+                <table  class="table is-bordered is-hoverable is-fullwidth" style="margin-bottom: 20px">
+                  <tbody>
+                    <tr>
+                      <th style="padding: 10px 20px; background-color: silver;">職種</th>
+                      <td style="padding: 10px 20px;">{{obj.job}}</td>
+                    </tr>
+                    <tr>
+                      <th style="padding: 10px 20px; background-color: silver;">勤務地</th>
+                      <td style="padding: 10px 20px;">{{obj.location}}</td>
+                    </tr>
+                    <tr>
+                      <th style="padding: 10px 20px; background-color: silver;">会社名</th>
+                      <td style="padding: 10px 20px;">{{obj.agent}}</td>
+                    </tr>
+                  </tbody>
+                </table>
+                <small>Posted at {{obj.data_added}}</small>
+                {% comment %} <p><a href="{% url 'aggry_app:job_detail' obj.id %}">詳細を見る</a></p> {% endcomment %}
+                <div class="has-text-right">
+                <button id={{obj.id}} class="more_info button is-info is-hovered" data-title={{obj.title}} data-job={{obj.job}} data-location={{obj.location}} data-price={{obj.price}} data-detail={{obj.mod_detail}} data-welfare={{obj.mod_welfare}} data-agent={{obj.agent}} data-agent-url={{obj.agent_url}} data-url={{obj.url}}>詳細を見る</button>
+                </div>
+                <br>
+              </div>
+              <hr>
+            {% endfor %}
+
+            
+        {% comment %} ラベルが-1（外れ値）以外だった場合{% endcomment %}
+        {% else %}
+            <div style="margin-bottom:150px; ">
+                {% comment %} １求人ずつ取得 {% endcomment %}
+                {% for obj in objs %}
+                    {% comment %} １個目の求人なら {% endcomment %}
+                    {% if forloop.counter == 1 %}
+                        <div class="job_box" style="max-width:600px; padding:30px; box-shadow: 15px 16px 47px -15px #464a7c; border-radius: 31px;">
+                          <h2 class="subtitle">{{obj.title}}</h2>
+                          <table  class="table is-bordered is-hoverable is-fullwidth" style="margin-bottom: 20px">
+                            <tbody>
+                              <tr>
+                                <th style="padding: 10px 20px; background-color: silver;">職種</th>
+                                <td style="padding: 10px 20px;">{{obj.job}}</td>
+                              </tr>
+                              <tr>
+                                <th style="padding: 10px 20px; background-color: silver;">勤務地</th>
+                                <td style="padding: 10px 20px;">{{obj.location}}</td>
+                              </tr>
+                              <tr>
+                                <th style="padding: 10px 20px; background-color: silver;">会社名</th>
+                                <td style="padding: 10px 20px;">{{obj.agent}}</td>
+                              </tr>
+                              {% comment %} <tr>
+                                <th style="padding: 10px 20px; background-color: silver;">要素数</th>
+                                {% with objs|length as obj_cnt %}
+                                <td style="padding: 10px 20px;">{{ obj_cnt }}</td>
+                                {% endwith %}
+                              </tr> {% endcomment %}
+                            </tbody>
+                          </table>
+                          <small>Posted at {{obj.data_added}}</small>
+                          {% comment %} <p><a href="{% url 'aggry_app:job_detail' obj.id %}">詳細を見る</a></p> {% endcomment %}
+                          <div class="has-text-right">
+                          <button id={{obj.id}} class="more_info button is-info is-hovered" data-title={{obj.title}} data-job={{obj.job}} data-location={{obj.location}} data-price={{obj.price}} data-detail={{obj.mod_detail}} data-welfare={{obj.mod_welfare}} data-agent={{obj.agent}} data-agent-url={{obj.agent_url}} data-url={{obj.url}}>詳細を見る</button>
+                          </div>
+                          {% comment %} 類似求人が存在する求人グループならグループならボタンを表示 {% endcomment %}
+                          {% with objs|length as obj_cnt %}
+                              {% if obj_cnt != 1 %}
+                              <div class="has-text-centered">
+                              <button id="div{{obj.label1}}" class="button is-primary is-light grouping">{{ obj_cnt|add:"-1" }}件の類似求人を表示</button>
+                              </div>
+                              {% endif %}
+                          {% endwith %}
+                          <br>
+                        </div>
+
+
+                    {% comment %} ２個目以降の求人なら {% endcomment %}
+                    {% else %}
+                        <div class="div{{obj.label1}} job_box" style="display: none; max-width:600px; padding:30px; box-shadow: 15px 16px 47px -15px #464a7c; border-radius: 31px;">
+                          <h2 class="subtitle">{{obj.title}}</h2>
+                          <table  class="table is-bordered is-hoverable is-fullwidth" style="margin-bottom: 20px">
+                            <tbody>
+                              <tr>
+                                <th style="padding: 10px 20px; background-color: silver;">職種</th>
+                                <td style="padding: 10px 20px;">{{obj.job}}</td>
+                              </tr>
+                              <tr>
+                                <th style="padding: 10px 20px; background-color: silver;">勤務地</th>
+                                <td style="padding: 10px 20px;">{{obj.location}}</td>
+                              </tr>
+                              <tr>
+                                <th style="padding: 10px 20px; background-color: silver;">会社名</th>
+                                <td style="padding: 10px 20px;">{{obj.agent}}</td>
+                              </tr>
+                              {% comment %} <tr>
+                                <th style="padding: 10px 20px; background-color: silver;">要素数</th>
+                                {% with objs|length as obj_cnt %}
+                                <td style="padding: 10px 20px;">{{ obj_cnt }}</td>
+                                {% endwith %}
+                              </tr> {% endcomment %}
+                            </tbody>
+                          </table>
+                          <small>Posted at {{obj.data_added}}</small>
+                          {% comment %} <p><a href="{% url 'aggry_app:job_detail' obj.id %}">詳細を見る</a></p> {% endcomment %}
+                          <div class="has-text-right">
+                          <button id={{obj.id}} class="more_info button is-info is-hovered" data-title={{obj.title}} data-job={{obj.job}} data-location={{obj.location}} data-price={{obj.price}} data-detail={{obj.mod_detail}} data-welfare={{obj.mod_welfare}} data-agent={{obj.agent}} data-agent-url={{obj.agent_url}} data-url={{obj.url}}>詳細を見る</button>
+                          </div>
+                          <br>
+                        </div>
+                    {% endif %}
+
+
+                {% endfor %}
+            </div>
+            <hr>
+        {% endif %}
+    {% endfor %}
+    </div>
+
+
+    {% comment %} 右側のボックス {% endcomment %}
+    <div class="column is-7">
+      <div id="box" class="box" style="
+      max-width: 700px;
+      height: 800px;
+      overflow-y: scroll;
+      box-shadow: 0px 0px 19px -1px;
+      border-radius: 20px;">
+      {% comment %} デフォルトの中身を一番最初の求人情報に設定 {% endcomment %}
+      <div style="padding: 20px;">
+        <h1 class="title" style="margin-bottom: 30px;">{{page_obj.0.0.title}}</h1>
+        <table class="table is-bordered is-hoverable is-fullwidth" style="margin-bottom: 20px">
+            <tbody>
+                <tr>
+                    <th style="width: 150px;">業務内容</th>
+                    <td>{{page_obj.0.0.job}}</td>
+                </tr>
+                <tr>
+                  <th style="width: 150px;">勤務地</th>
+                  <td>{{page_obj.0.0.location}}</td>
+                </tr>
+                <tr>
+                  <th style="width: 150px;">給与</th>
+                  <td>{{page_obj.0.0.price}}</td>
+                </tr>
+                <tr>
+                  <th style="width: 150px;">仕事内容</th>
+                  <td style="white-space: pre-line;">{{page_obj.0.0.detail}}</td>
+                </tr>
+                <tr>
+                  <th style="width: 150px;">福利厚生</th>
+                  <td style="white-space: pre-line;">{{page_obj.0.0.welfare}}</td>
+                </tr>
+                <tr>
+                  <th style="width: 150px;">会社名</th>
+                  <td>{{page_obj.0.0.agent}}</td>
+                </tr>
+                <tr>
+                  <th style="width: 150px;">会社HP</th>
+                  <td>{{page_obj.0.0.agent_url}}</td>
+                </tr>
+              </tbody>
+            </table>
+            <div class="has-text-centered">
+            <button id="default_application" class="application button is-danger is-rounded is-large is-hovered" style="margin: 50px;" data-url={{page_obj.0.0.url}}>応募する</button>
+            </div>
+          </div>
+      </div>
+    </div>
+</div>
+
+
+<hr id="end_line" style="border: 0; 
+height: 1px; 
+background-image: -webkit-linear-gradient(left, #f0f0f0, #8c8b8b, #f0f0f0);
+background-image: -moz-linear-gradient(left, #f0f0f0, #8c8b8b, #f0f0f0);
+background-image: -ms-linear-gradient(left, #f0f0f0, #8c8b8b, #f0f0f0);
+background-image: -o-linear-gradient(left, #f0f0f0, #8c8b8b, #f0f0f0); ">
+
+
+
+<div class="pagination" style="margin:auto; width: 600px;">
+  {% if page_obj.has_previous %}
+  <a href="?job={{job}}&location={{location}}&page={{ page_obj.previous_page_number }}" style="font-size: 50px;">&#9664;</a>
+  {% else %}
+  <p style="font-size: 50px;">&#9665;</p>
+  {% endif %}
+  <span class="current-page" style="font-size: 30px;">{{ page_obj.number }}</span>
+
+  {% if page_obj.has_next %}
+  <a href="?job={{job}}&location={{location}}&page={{ page_obj.next_page_number }}" style="font-size: 50px;">&#9654;</a>
+  {% else %}
+  <p style="font-size: 50px;">&#9655;</p>
+  {% endif %}
+</div>
+
+
+
+
+<script>
+
+  {% comment %} ボックス要素の設定 {% endcomment %}
+  const boxElement = document.querySelector('#box');
+  window.addEventListener('scroll', () => {
+    const currentScrollPosition = window.scrollY;
+    // 上端200pxより下なら固定表示
+    if (currentScrollPosition > 200) {
+      boxElement.style.position = 'fixed';
+      boxElement.style.top = '20px';
+      boxElement.style.left = 'auto';
+      boxElement.style.right = 'auto';
+    } 
+    // 200pxより上ならそのまま
+    else {
+      boxElement.style.position = 'static';
+    }
+
+
+    const boxElementRect = boxElement.getBoundingClientRect();
+    const otherElementRect = document.querySelector('#end_line').getBoundingClientRect();
+
+    // 下のバーにボックス要素が重なったらボックス要素をその分縮める
+    if (boxElementRect.bottom >= otherElementRect.top) {
+      const newHeight = otherElementRect.top - boxElementRect.top;
+      boxElement.style.height = `${newHeight}px`;
+    }
+    // それ以外なら画面全体から50px引いた高さに設定
+    else {
+      boxElement.style.height = `${window.innerHeight-50}px`;
+    }
+  });
+
+
+
+  {% comment %} 類似求人ボタン要素を取得 {% endcomment %}
+  const buttons = document.querySelectorAll(".grouping");
+
+  {% comment %} 類似求人ボタン要素がクリックされたら類似求人を表示 {% endcomment %}
+  buttons.forEach(function(button) {
+    button.addEventListener("click", function() {
+      const listItems = document.querySelectorAll(`.${button.id}`);
+      listItems.forEach(item => {
+        if (item.style.display=='none'){
+          item.style.display = 'block';
+        }else{
+          item.style.display = 'none';
+        } 
+      });      
+    });
+  });
+
+
+
+  {% comment %} div要素をクリックしたら、ボックス要素の中身を変化させる {% endcomment %}
+  const clickableDivs = document.querySelectorAll('.more_info');
+  clickableDivs.forEach((div) => {
+    div.addEventListener('click', (event) => {
+      const job_title = div.getAttribute('data-title');
+      const job_job = div.getAttribute('data-job');
+      const job_location = div.getAttribute('data-location');
+      const job_price = div.getAttribute('data-price');
+      const job_detail = div.getAttribute('data-detail');
+      const job_welfare = div.getAttribute('data-welfare');
+      const job_agent = div.getAttribute('data-agent');
+      const job_agent_url = div.getAttribute('data-agent-url');
+      const job_url = div.getAttribute('data-url');
+      boxElement.innerHTML = `
+      <div style="padding: 20px;">
+      <h1 class="title" style="margin-bottom: 30px;">${job_title}</h1>
+      <table class="table is-bordered is-hoverable is-fullwidth" style="margin-bottom: 20px">
+          <tbody>
+              <tr>
+                  <th style="width: 150px;">業務内容</th>
+                  <td>${job_job}</td>
+              </tr>
+              <tr>
+                <th style="width: 150px;">勤務地</th>
+                <td>${job_location}</td>
+              </tr>
+              <tr>
+                <th style="width: 150px;">給与</th>
+                <td>${job_price}</td>
+              </tr>
+              <tr>
+                <th style="width: 150px;">仕事内容</th>
+                <td style="white-space: pre-line;">${job_detail}</td>
+              </tr>
+              <tr>
+                <th style="width: 150px;">福利厚生</th>
+                <td style="white-space: pre-line;">${job_welfare}</td>
+              </tr>
+              <tr>
+                <th style="width: 150px;">会社名</th>
+                <td>${job_agent}</td>
+              </tr>
+              <tr>
+                <th style="width: 150px;">会社HP</th>
+                <td style="white-space: pre-line;">${job_agent_url}</td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="has-text-centered">
+            <button id="job_application" onclick="application()" class="application button is-danger is-rounded is-large is-hovered" style="margin: 50px;" data-url=${job_url}>応募する</button>
+          </div>
+        </div>
+              `;
+    });
+  });
+
+
+
+{% comment %} デフォルトの応募ボタン {% endcomment %}
+const apl1 = document.querySelector('#default_application');
+apl1.addEventListener('click', (event) => {
+  const url = apl1.getAttribute('data-url');
+  window.open(url, '_blank');
+});
+
+
+
+{% comment %} 応募ボタン {% endcomment %}
+function application() {
+  const apl2 = document.querySelector('#job_application');
+  const url = apl2.getAttribute('data-url');
+  window.open(url, '_blank');
+};
+
+</script>
+
+
+
+
+{% endblock %}
+
+

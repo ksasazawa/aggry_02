@@ -1,0 +1,51 @@
+{% extends "aggry_app/base.html" %}
+{% block content %}
+
+<h1 class="title">求人詳細</h1>
+<hr>
+
+<div style="width: 1000px; margin: auto;">
+    <h1 class="title">{{job.title}}</h1>
+    <table  class="table is-bordered is-hoverable is-fullwidth" style="margin-bottom: 20px">
+        <tbody>
+            <tr>
+                <th style="width: 150px;">業務内容</th>
+                <td>{{job.job}}</td>
+            </tr>
+            <tr>
+                <th style="width: 150px;">勤務地</th>
+                <td>{{job.location}}</td>
+            </tr>
+            <tr>
+                <th style="width: 150px;">給与</th>
+                <td>{{job.price}}</td>
+            </tr>
+            <tr>
+                <th style="width: 150px;">仕事内容</th>
+                <td style="white-space: pre-line;">{{job.detail}}</td>
+            </tr>
+            <tr>
+                <th style="width: 150px;">会社名</th>
+                <td>{{job.agent}}</td>
+            </tr>
+        </tbody>
+    </table>
+    <div class="has-text-right">
+        <small>Posted at {{job.data_added}}</small>
+    </div>
+
+    <div class="has-text-centered">
+        <div>
+            <button onclick="openWindow()" class="button is-danger is-rounded is-large is-hovered" style="margin: 50px;">応募する</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    function openWindow() {
+        window.open("{{ job.url }}", '_blank');
+    }
+</script>
+    
+
+{% endblock %}
