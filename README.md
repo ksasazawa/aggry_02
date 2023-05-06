@@ -46,4 +46,7 @@
         - https://hodalog.com/how-to-use-bootstrap-4-forms-with-django/
     - bulma CSS
         - https://johobase.com/bulma-cheat-sheet/
+- アプリケーションがダウンしないようにするには
+    - UptimeRobot
+        - https://uptimerobot.com/dashboard
 
